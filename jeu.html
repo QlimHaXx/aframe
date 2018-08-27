@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Tracked Controls</title>
+    <meta name="description" content="Tracked Controls – A-Frame">
+    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+    <script src="https://rawgit.com/feiss/aframe-environment-component/master/dist/aframe-environment-component.min.js"></script>
+  </head>
+  <body>
+    <!-- <a-scene>
+      <a-assets>
+        <audio id="click-sound" src="audio/click.ogg"></audio>
+        <img id="city" src="images/space.jpg">
+        <img id="city-thumb" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-city.jpg">
+        <img id="cubes" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/cubes.jpg">
+        <img id="cubes-thumb" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-cubes.jpg">
+        <img id="sechelt" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/sechelt.jpg">
+        <img id="sechelt-thumb" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-sechelt.jpg">
+      </a-assets>
+
+      <a-sky id="image-360" radius="10" src="#city"></a-sky>
+
+      <a-entity position="2 0 0">
+        <a-box height="1" width="0.1" depth="0.1" position="0 0.5 0" color="#00FF00"></a-box>
+        <a-box height="0.1" width="1" depth="0.1" position="0.5 0 0" color="#FF0000"></a-box>
+        <a-box height="0.1" width="0.1" depth="1" position="0 0 0.5" color="#0000FF"></a-box>
+      </a-entity>
+
+      <a-entity class="link" 
+        cursor="fuse: true;"
+        geometry="primitive: plane; height: 1; width: 1" 
+        material="shader: flat; src: #cubes-thumb">
+        <a-animation begin="click" easing="ease-in" attribute="scale"
+                   fill="backwards" from="0.1 0.1 0.1" to="1 1 1" dur="150"></a-animation>
+          <a-animation begin="cursor-fusing" easing="ease-in" attribute="scale"
+                   from="1 1 1" to="0.1 0.1 0.1" dur="1500"></a-animation>
+      </a-entity>
+
+      <a-camera position="0 1 5">
+        <a-cursor color="#FFF">
+          <a-animation begin="click" easing="ease-in" attribute="scale"
+                   fill="backwards" from="0.1 0.1 0.1" to="1 1 1" dur="150"></a-animation>
+          <a-animation begin="cursor-fusing" easing="ease-in" attribute="scale"
+                   from="1 1 1" to="0.1 0.1 0.1" dur="1500"></a-animation>
+        </a-cursor>
+      </a-camera>
+
+      <a-light type="point" color="#FFF" position="0 5 2"></a-light>
+    </a-scene> -->
+    <a-scene id="main">
+      <a-assets>
+        <img id="space" src="images/space.jpg">
+        <img id="texture" src="model/texture.jpg">
+        <a-asset-item id="create-obj" src="model/vaisseau.obj"></a-asset-item>
+        <a-asset-item id="create-mtl" src="model/vaisseau.mtl"></a-asset-item>
+      </a-assets>
+      
+      <a-entity id="player" position="0 1 4">
+        <a-sky id="image-360" radius="20" src="#space"></a-sky>
+        <a-entity id="camera" camera look-controls wasd-controls>
+          <a-entity position="0 0 -3"
+                    geometry="primitive: ring; radiusInner: 0.06; radiusOuter: 0.1;"
+                    material="color: cyan; shader: flat"
+                    cursor="fuse: true">
+          </a-entity>
+          <a-light type="point" position="0 3 0"></a-light>
+        </a-entity>
+      </a-entity>
+      <a-entity id="menu">
+        <a-entity class="button" material="color: #333" position="3.5 0 0" rotation="0 -45 0" geometry="primitive:plane">
+            <a-text value="Play!" color="#FFF" align="center"></a-text>
+            <a-animation begin="mouseenter" easing="ease-in" attribute="scale"
+                     from="1 1 1" to="2 2 2" dur="150" fill="forwards"></a-animation>
+            <a-animation begin="click" easing="ease-in" attribute="scale"
+                     from="2 2 2" to="0 0 0" dur="150" fill="forwards"></a-animation>
+            <a-animation begin="mouseleave" easing="ease-in" attribute="scale"
+                       from="2 2 2" to="1 1 1" dur="150" fill="forwards"></a-animation>
+          </a-entity>
+        </a-entity>
+      </a-entity>
+    </a-scene>
+    <script>
+      var value = 4;
+      var t = 0;
+      var circles = []
+      var player = document.getElementById('player');
+      var camera = document.getElementById('camera');
+
+      function movePlayer(value){
+        player.setAttribute("position", "0 1 "+value)
+      }
+
+      function createCercle(x, y, z){
+        var newCercle = document.createElement("a-ring");
+        document.createElement("a-ring");
+        newCercle.setAttribute("radius-inner", 2);
+        newCercle.setAttribute("radius-outer", 2.5);
+        newCercle.setAttribute("position", x+" "+y+" "+z);
+        var mainDiv = document.getElementById("main");
+        mainDiv.appendChild(newCercle);
+	      circles.push(newCercle);  
+      }
+      
+      function showLevel(){
+        // crée un nouvel élément
+        createCercle(0, 10, -10);
+        createCercle(0, 20, -30);
+        createCercle(0, -10, -50);
+        var newVaisseau = document.createElement("a-obj-model");
+        newVaisseau.setAttribute("position", "0 -1.4 -3");
+        newVaisseau.setAttribute("src", "#create-obj");
+        newVaisseau.setAttribute("mtl", "#create-mtl");
+        newVaisseau.setAttribute("id", "vaisseau");
+        var playerDiv = document.getElementById("player");
+        playerDiv.appendChild(newVaisseau);
+
+	/*  
+        setInterval(function(){
+          movePlayer(value);
+          value -= 0.1;
+	  console.log(value);
+	   
+        }, 1);
+	*/
+    	  function render() {
+  	      t -= 0.1;
+  	      requestAnimationFrame(render);
+          var vaisseau = document.getElementById("vaisseau");
+  	      player.setAttribute('position', -camera.getAttribute('rotation').y/2+" "+camera.getAttribute('rotation').x/2+" "+t);
+          vaisseau.setAttribute('rotation', camera.getAttribute('rotation'));
+  	      //console.log(camera.getAttribute('rotation'));
+  	      //console.log(circles.length);
+  	      if(circles.length == 1){
+    		    //console.log('hey nouveau cercle!!!!!!!!!!!!!!!!!!!!!');
+  		      createCercle(t*200);
+  	      }
+    	  }
+  	  
+	       render();
+      }
+
+      var buttons = document.getElementsByClassName('button');
+      for (var i = 0; i < buttons.length; i++) {
+        var button = buttons[i];
+        button.addEventListener("click", function(){
+          var menu = document.getElementById('menu');
+          menu.parentNode.removeChild(menu);
+          showLevel();
+        });
+      }
+    </script>
+  </body>
+</html>
